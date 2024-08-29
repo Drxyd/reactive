@@ -1,4 +1,4 @@
-library Reactive;
+library reactive;
 
 import 'package:flutter/material.dart';
 
@@ -8,10 +8,14 @@ abstract class ReactiveData
 
 	ReactiveData({this.key});
 
+	late bool Function() isMounted;
 	late void Function() rebuild;
 
-	void registerUpdate(void Function(void Function()) setState) 
-		=> rebuild = () => setState((){});
+	void registerUpdate(void Function(void Function()) setState, bool Function() isMounted) 
+	{
+		rebuild = () => setState((){});
+		this.isMounted = isMounted;
+	}
 }
 
 abstract class ReactiveWidget<T extends ReactiveData> extends StatefulWidget
@@ -34,7 +38,7 @@ abstract class ReactiveState<T extends ReactiveData> extends State<ReactiveWidge
 	{
 		super.initState();
 		data = widget.data;
-		data.registerUpdate(setState);
+		data.registerUpdate(setState, () => mounted);
 	}
 
 	@override
