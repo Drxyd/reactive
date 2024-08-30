@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 abstract class ReactiveData
 {
-	final Key? key;
+	Key? key;
 
 	ReactiveData({this.key});
 
@@ -22,7 +22,8 @@ abstract class ReactiveWidget<T extends ReactiveData> extends StatefulWidget
 {
 	final T data;
 
-	ReactiveWidget({required this.data}) : super(key: data.key);
+	ReactiveWidget({Key? key, required this.data}) 
+		: super(key: key ?? data.key);
 
 	@override
 	State<ReactiveWidget> createState();
