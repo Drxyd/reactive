@@ -1,3 +1,3 @@
 export 'src/reactive.dart' show 
-    ReactiveWidget, ReactiveData, ReactiveState,
-    Reactor, ReactorData;
+    Reactive, Core, Optic,
+    Reactor, ReactorCore;
