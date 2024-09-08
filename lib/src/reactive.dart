@@ -2,6 +2,7 @@ library reactive;
 
 import 'package:flutter/material.dart';
 
+// A more transparent interface to facilitate an imperative style
 abstract class ReactiveData
 {
 	Key? key;
@@ -44,4 +45,25 @@ abstract class ReactiveState<T extends ReactiveData> extends State<ReactiveWidge
 
 	@override
 	Widget build(BuildContext context);
+}
+
+
+// Builder based interface to facilitate a more declarative style
+class Reactor extends ReactiveWidget<ReactorData>
+{
+	Reactor({super.key, required super.data});
+
+	@override
+	ReactorState createState() => ReactorState();
+}
+
+class ReactorData extends ReactiveData
+{
+	Widget Function() builder;
+	ReactorData({required this.builder});
+}
+
+class ReactorState extends ReactiveState<ReactorData>
+{
+	Widget build(BuildContext) => data.builder();
 }
