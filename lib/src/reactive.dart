@@ -79,17 +79,10 @@ class CatalystBuild extends Build<CatalystCore>
 }
 
 
-class Reactor<T> extends StatefulWidget
+class Reactor<T> extends Reactive<ReactorCore<T?>>
 {
-	final ReactorCore<T> core;
 	Reactor({super.key, required Widget Function(T?) builder, T? data}) 
-		: core = ReactorCore<T>(builder: builder, data: data);
-
-	void react () { 
-		bool initialized = core.isInitialized;
-		assert(initialized, "react called on unmounted widget");
-		if(initialized) core.rebuild(); 
-	}
+		: super(core: ReactorCore<T>(builder: builder, data: data));
 
 	void reactWith(T newData)
 	{
@@ -106,42 +99,16 @@ class Reactor<T> extends StatefulWidget
 	ReactorBuild<T> createState() => ReactorBuild<T>();
 }
 
-class ReactorCore<T>
+class ReactorCore<T> extends Core
 {
 	final Widget Function(T?) builder;
 	T? data;
 
 	ReactorCore({required this.builder, required this.data});
-
-	late bool Function() isMounted;
-	late void Function() rebuild;
-	bool isInitialized = false;
-
-	void linkBuild(void Function(void Function()) setState, bool Function() isMounted) 
-	{
-		this.isMounted = isMounted;
-		rebuild = () { 
-			bool mounted = isMounted();
-			assert(mounted, "rebuild called on unmounted widget");
-			if(mounted) setState((){}); 
-		};
-		isInitialized = true;
-	}
 }
 
-class ReactorBuild<T> extends State<Reactor<T>>
+class ReactorBuild<T> extends Build<ReactorCore<T>>
 {
-	late ReactorCore<T> core;
-
-	@override
-	@mustCallSuper
-	void initState()
-	{
-		super.initState();
-		core = widget.core;
-		core.linkBuild(setState, () => mounted);
-	}
-	
 	@override
 	Widget build(BuildContext context) => core.builder(core.data);
 }
