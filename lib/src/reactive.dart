@@ -8,7 +8,11 @@ abstract class Reactive <T extends Core> extends StatefulWidget
 
 	const Reactive({super.key, required this.core});
 
-	void react () { if(core.isInitialized) core.rebuild(); }
+	void react () { 
+		bool initialized = core.isInitialized;
+		assert(initialized, "react called on unmounted widget");
+		if(initialized) core.rebuild(); 
+	}
 
 	@override
 	State<Reactive> createState();
@@ -23,7 +27,11 @@ abstract class Core
 	void linkBuild(void Function(void Function()) setState, bool Function() isMounted) 
 	{
 		this.isMounted = isMounted;
-		rebuild = () { if(isMounted()) setState((){}); };
+		rebuild = () { 
+			bool mounted = isMounted();
+			assert(mounted, "rebuild called on unmounted widget");
+			if(mounted) setState((){}); 
+		};
 		isInitialized = true;
 	}
 }
